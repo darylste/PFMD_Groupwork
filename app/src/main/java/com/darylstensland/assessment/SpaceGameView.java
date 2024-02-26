@@ -51,9 +51,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         screenX = x;
         screenY = y;
 
-        spaceship = new Spaceship(context, x, y);
-
-
         ourHolder = getHolder();
         paint = new Paint();
 
@@ -67,9 +64,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
 
     private void initLevel(){
-
-
-
+        spaceship = new Spaceship(context, screenX, screenY);
     }
 
 
@@ -144,6 +139,57 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         playing = true;
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+
+            // Player has touched the screen
+
+            case MotionEvent.ACTION_DOWN:
+
+                paused = false;
+
+                if(motionEvent.getY() > screenY - screenY / 2) {
+                    if (motionEvent.getX() > screenX / 2) {
+                        spaceship.setMovementState(spaceship.RIGHT);
+                    } else {
+                        spaceship.setMovementState(spaceship.LEFT);
+                    }
+
+
+                }
+
+                if(motionEvent.getY() < screenY - screenY / 2) {
+                    if (motionEvent.getX() > screenX / 2) {
+                        spaceship.setMovementState(spaceship.UP);
+                    } else {
+                        spaceship.setMovementState(spaceship.DOWN);
+                    }
+
+
+                }
+
+                //    if(motionEvent.getY() < screenY - screenY / 8) {
+                // Shots fired
+                //       if(bullet.shoot(playerShip.getX()+ playerShip.getLength()/2,screenY,bullet.UP)){
+                //        soundPool.play(shootID, 1, 1, 0, 0, 1);
+                //       }
+                //   }
+
+                break;
+
+            // Player has removed finger from screen
+            case MotionEvent.ACTION_UP:
+
+                //   if(motionEvent.getY() > screenY - screenY / 10) {
+                spaceship.setMovementState(spaceship.STOPPED);
+                //   }
+                break;
+        }
+        return true;
     }
 
 
