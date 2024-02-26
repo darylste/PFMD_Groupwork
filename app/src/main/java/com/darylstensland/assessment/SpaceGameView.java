@@ -10,12 +10,15 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Space;
 
 import java.io.IOException;
 
 public class SpaceGameView extends SurfaceView implements Runnable{
 
     private Context context;
+
+    private Spaceship spaceship;
 
     private Thread gameThread = null;
     private SurfaceHolder ourHolder;
@@ -45,13 +48,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
 
         this.context = context;
+        screenX = x;
+        screenY = y;
+
+        spaceship = new Spaceship(context, x, y);
 
 
         ourHolder = getHolder();
         paint = new Paint();
 
-        screenX = x;
-        screenY = y;
+
 
 
 
@@ -112,8 +118,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             canvas = ourHolder.lockCanvas();
 
 
-            canvas.drawColor(Color.argb(255, 26, 128, 182));
-
+            canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.background), 0, 0, paint);
+            canvas.drawBitmap(spaceship.getBitmap(), Spaceship.getX(), Spaceship.getY(), paint);
             paint.setColor(Color.argb(255,  249, 129, 0));
             paint.setTextSize(40);
             canvas.drawText("Score: " + score + "   Lives: " +
