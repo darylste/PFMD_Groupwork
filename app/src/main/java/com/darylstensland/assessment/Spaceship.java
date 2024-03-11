@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 
+
 public class Spaceship {
 
     RectF rect;
@@ -12,11 +13,11 @@ public class Spaceship {
     private Bitmap bitmapleft;
     private Bitmap bitmapright;
     private Bitmap bitmapdown;
-    public static Bitmap currentBitmap;
+    public Bitmap currentBitmap;
     private float height;
     private float length;
-    private static float x;
-    private static float y;
+    private float x;
+    private float y;
     private int screenX;
     private int screenY;
     private float SpaceShipSpeed;
@@ -113,18 +114,18 @@ public class Spaceship {
         return rect;
     }
 
-    public static Bitmap getBitmap(){
+    public Bitmap getBitmap(){
 
         return currentBitmap;
     }
 
-    public static float getX(){
+    public float getX(){
         return x;
     }
     public void setX(int x) {
         this.x = x;
     }
-    public static float getY(){
+    public float getY(){
         return y;
     }
     public void setY(int y){
@@ -134,7 +135,16 @@ public class Spaceship {
         return length;
     }
 
+    public void updateShipPosition(int curX, int curY, int tarX, int tarY) {
 
+        float currentX = curX;
+        float currentY = curY;
+
+        float deltaX = tarX - currentX;
+        float deltaY = tarY - currentY;
+
+
+    }
 
 
 }

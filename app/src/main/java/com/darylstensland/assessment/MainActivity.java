@@ -1,16 +1,14 @@
-
 package com.darylstensland.assessment;
 
-import android.app.Activity;
-import android.graphics.Point;
 import android.os.Bundle;
+import android.graphics.Point;
 import android.view.Display;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.darylstensland.assessment.SpaceGameView;
 
-
-public class MainActivity extends Activity {
-
+public class MainActivity extends AppCompatActivity {
 
     SpaceGameView spaceGameView;
 
@@ -47,5 +45,5 @@ public class MainActivity extends Activity {
         // Tell the gameView pause method to execute
         spaceGameView.pause();
     }
-
 }
+
