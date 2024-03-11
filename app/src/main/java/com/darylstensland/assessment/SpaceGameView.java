@@ -108,6 +108,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             paint.setTextSize(40);
             canvas.drawText("Score: " + score + "   Lives: " +
                     lives, 10,50, paint);
+            canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_third), 100, 400, paint);
             ourHolder.unlockCanvasAndPost(canvas);
         }
     }
