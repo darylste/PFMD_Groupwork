@@ -103,12 +103,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
 
             canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.background), 0, 0, paint);
-            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
+            canvas.drawBitmap(spaceShip.getBitmap(),spaceShip.getX(), spaceShip.getY(), paint);
             paint.setColor(Color.argb(255,  249, 129, 0));
             paint.setTextSize(40);
             canvas.drawText("Score: " + score + "   Lives: " +
                     lives, 10,50, paint);
-            canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_third), 100, 400, paint);
+            canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_up), 275, 1500, paint);
+            canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_down), 25, 1500, paint);
+            canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_left), 150, 1375, paint);
+            canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_right), 150, 1625, paint);
+
             ourHolder.unlockCanvasAndPost(canvas);
         }
     }
@@ -136,21 +140,40 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             case MotionEvent.ACTION_DOWN:
                 paused = false;
 
-                if(motionEvent.getY() > screenY - screenY / 2) {
-                    if (motionEvent.getX() > screenX / 2) {
-                        spaceShip.setMovementState(spaceShip.RIGHT);
-                    } else {
-                        spaceShip.setMovementState(spaceShip.LEFT);
+//                if(motionEvent.getY() > screenY - screenY / 2) {
+//                    if (motionEvent.getX() > screenX / 2) {
+//                        spaceShip.setMovementState(spaceShip.RIGHT);
+//                    } else {
+//                        spaceShip.setMovementState(spaceShip.LEFT);
+//                    }
+//
+//
+//                }
+//
+//                if(motionEvent.getY() < screenY - screenY / 2) {
+//                    if (motionEvent.getX() > screenX / 2) {
+//                        spaceShip.setMovementState(spaceShip.UP);
+//                    } else {
+//                        spaceShip.setMovementState(spaceShip.DOWN);
+//                    }
+//
+//
+//                }
+                if ((motionEvent.getX() > 150) && (motionEvent.getX() < 250)) {
+                    if ((motionEvent.getY() > 1375) && (motionEvent.getY() < 1475) /*&& (spaceShip.getY() > 0)*/) {
+                        spaceShip.setMovementState(spaceShip.UP);
+                    } else if ((motionEvent.getY() > 1625) && (motionEvent.getY() < 1725)) {
+                        spaceShip.setMovementState(spaceShip.DOWN);
                     }
 
 
                 }
 
-                if(motionEvent.getY() < screenY - screenY / 2) {
-                    if (motionEvent.getX() > screenX / 2) {
-                        spaceShip.setMovementState(spaceShip.UP);
-                    } else {
-                        spaceShip.setMovementState(spaceShip.DOWN);
+                if ((motionEvent.getY() > 1500) && (motionEvent.getY() < 1600)) {
+                    if ((motionEvent.getX() > 275) && (motionEvent.getX() < 375)) {
+                        spaceShip.setMovementState(spaceShip.RIGHT);
+                    } else if ((motionEvent.getX() > 25) && (motionEvent.getX() < 125) /*&& (spaceShip.getX() > 0)*/) {
+                        spaceShip.setMovementState(spaceShip.LEFT);
                     }
 
 
