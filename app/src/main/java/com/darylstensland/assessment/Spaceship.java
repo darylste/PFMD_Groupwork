@@ -134,6 +134,9 @@ public class Spaceship {
     public float getLength(){
         return length;
     }
+    public float getHeight(){
+        return height;
+    }
 
     public void updateShipPosition(int curX, int curY, int tarX, int tarY) {
 
