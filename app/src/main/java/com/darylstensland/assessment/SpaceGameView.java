@@ -65,8 +65,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     @Override
     public void run() {
         while (playing) {
-            score = 10;
-
             long startFrameTime = System.currentTimeMillis();
 
             if(!paused){
@@ -111,29 +109,61 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
         }
+
+        if(lives <= 0) {
+            playing = false;
+        }
+
     }
 
 
-    private void checkCollisions(){
-        if (spaceShip.getX() > screenX - spaceShip.getLength())
-            spaceShip.setX(0);
-        if (spaceShip.getX() < 0 + spaceShip.getLength())
-            spaceShip.setX(screenX);
+    private void checkCollisions() {
+//        if (spaceShip.getX() > screenX - spaceShip.getLength())
+//            spaceShip.setX(0);
+//        if (spaceShip.getX() < 0 + spaceShip.getLength())
+//            spaceShip.setX(screenX);
+//
+//        if (spaceShip.getY() > screenY - spaceShip.getLength())
+//            spaceShip.setY(0);
+//        if (spaceShip.getY() < 0 + spaceShip.getLength())
+//            spaceShip.setY(screenY);
+//
+//        Set bullets inactive when off screen
+        if (bullet.getImpactPointY() < 0 ||
+                bullet.getImpactPointY() > screenY ||
+                bullet.getImpactPointX() < 0 ||
+                bullet.getImpactPointX() > screenX
+        ) {
+            bullet.setInactive();
+        }
 
-        if (spaceShip.getY() > screenY - spaceShip.getLength())
-            spaceShip.setY(0);
-        if (spaceShip.getY() < 0 + spaceShip.getLength())
-            spaceShip.setY(screenY);
+//        Handle bullets hitting enemies
+        for (int i = 0; i < 5; i++) {
+            if (bullet.getImpactPointX() >= enemies[i].getX() &&
+                    bullet.getImpactPointX() <= enemies[i].getX() + enemies[i].getLength() &&
+                    bullet.getImpactPointY() >= enemies[i].getY() &&
+                    bullet.getImpactPointY() <= enemies[i].getY() + enemies[i].getHeight() &&
+                    bullet.getStatus() &&
+                    enemies[i].getVisibility()
+            ) {
+                bullet.setInactive();
+                enemies[i].setInvisible();
+                numEnemies--;
+                score = score + 1;
+            }
+        }
 
-        if(bullet.getImpactPointY() < 0)
-            bullet.setInactive();
-        if(bullet.getImpactPointY() > screenY)
-            bullet.setInactive();
-
-        if(bullet.getImpactPointX() < 0)
-            bullet.setInactive();
-        if(bullet.getImpactPointX() > screenX)
-            bullet.setInactive();
+//        Handle enemies hitting player
+        for (int i = 0; i < 5; i++) {
+            if(enemies[i].isVisible &&
+               enemies[i].getX() >= spaceShip.getX() &&
+               enemies[i].getX() <= spaceShip.getX() + spaceShip.getHeight() &&
+               enemies[i].getY() >= spaceShip.getY() &&
+               enemies[i].getY() <= spaceShip.getY() + spaceShip.getLength()){
+                lives = lives-1;
+                enemies[i].setInvisible();
+            }
+        }
 
     }
 
@@ -164,6 +194,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             for (int row = 0; row < 5; row++) {
                 if (enemies[row].getVisibility()) {
                     canvas.drawBitmap(enemies[row].getBitmap(), enemies[row].getX(), enemies[row].getY(), paint);
+                    numEnemies ++;
                 }
             }
 

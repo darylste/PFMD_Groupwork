@@ -98,6 +98,10 @@ public class Enemy {
         isVisible = false;
     }
 
+    public void setVisible() {
+        isVisible = true;
+    }
+
     public boolean getVisibility() {
         return isVisible;
     }
@@ -129,5 +133,9 @@ public class Enemy {
 
     public float getLength() {
         return length;
+    }
+
+    public float getHeight() {
+        return height;
     }
 }
