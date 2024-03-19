@@ -43,12 +43,13 @@ public class Bullet {
             heading = direction;
             isActive = true;
 
-            if ((direction == RIGHT)||(direction==LEFT))
-            {  width = screenX/20;
-                 height = 1;}
-
-                 else{height = screenY/20;
-                width = 1;}
+            if ((direction == RIGHT)||(direction==LEFT)) {
+                width = screenX/15;
+                height = 7;
+            } else {
+                height = screenX/15;
+                width = 7;
+            }
 
             return true;
         /*}
