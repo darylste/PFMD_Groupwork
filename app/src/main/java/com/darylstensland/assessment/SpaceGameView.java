@@ -29,8 +29,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private int screenY;
     public int score = 0;
     private int lives = 3;
-    Spaceship spaceShip;
+    private Spaceship spaceShip;
     private Bullet bullet;
+
+    private Enemy[] enemies = new Enemy[5];
+    private int numEnemies = 0;
 
     public SpaceGameView(Context context, int x, int y) {
         super(context);
@@ -42,14 +45,20 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         screenX = x;
         screenY = y;
 
+        spaceShip = new Spaceship(context, screenX, screenY);
+        bullet = new Bullet(screenX, screenY);
+
         initLevel();
     }
 
 
 
-    private void initLevel(){
-        spaceShip = new Spaceship(context, screenX, screenY);
-        bullet = new Bullet(screenY,screenX);
+    private void initLevel() {
+        numEnemies = 0;
+        for (int row = 0; row < 5; row++) {
+            enemies[row] = new Enemy(context, row, screenX, screenY);
+            numEnemies++;
+        }
     }
 
 
@@ -82,9 +91,26 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
         if(bullet.getStatus()) {
             bullet.update(fps);
+            checkCollisions();
+
         }
 
-        checkCollisions();
+        for (int row = 0; row < 5; row++) {
+            if (enemies[row].getVisibility()) {
+                enemies[row].update(fps);
+                // Check collision with bullet
+                checkCollisions();
+
+            }
+
+            if(enemies[row].getY() > screenY - enemies[row].getLength()) {
+                enemies[row].dropDownAndReverse();
+            }
+            if (enemies[row].getY() < -enemies[row].getLength()) {
+                enemies[row].dropDownAndReverse();
+            }
+
+        }
     }
 
 
@@ -134,6 +160,12 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
             if(bullet.getStatus())
                 canvas.drawRect(bullet.getRect(), paint);
+
+            for (int row = 0; row < 5; row++) {
+                if (enemies[row].getVisibility()) {
+                    canvas.drawBitmap(enemies[row].getBitmap(), enemies[row].getX(), enemies[row].getY(), paint);
+                }
+            }
 
             ourHolder.unlockCanvasAndPost(canvas);
         }

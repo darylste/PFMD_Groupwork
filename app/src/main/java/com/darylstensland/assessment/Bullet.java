@@ -26,7 +26,7 @@ public class Bullet {
 
     private boolean isActive;
 
-    public Bullet(int screenY, int screenX) {
+    public Bullet(int screenX, int screenY) {
 
       //  height = screenY / 20;
         isActive = false;

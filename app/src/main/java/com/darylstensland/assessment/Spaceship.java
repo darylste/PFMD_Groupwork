@@ -38,8 +38,8 @@ public class Spaceship {
         length = screenX/10;
         height = screenY/10;
 
-        x = screenX / 2;
-        y = screenY / 2;
+        x = screenX - screenX/2 - height;
+        y = screenY - screenY/2 - length;
 
         spaceShipSpeed = 350;
         bitmapup = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_up);
@@ -62,7 +62,7 @@ public class Spaceship {
         bitmapdown = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_down);
         bitmapdown = Bitmap.createScaledBitmap(bitmapdown, (int) (length), (int) (height),false);
 
-        currentBitmap = bitmapleft;
+        currentBitmap = bitmapright;
         this.screenX = screenX;
         this.screenY = screenY;
     }
