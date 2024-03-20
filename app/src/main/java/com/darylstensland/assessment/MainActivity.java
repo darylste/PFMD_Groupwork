@@ -16,12 +16,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Display display = getWindowManager().getDefaultDisplay();
 
         Point size = new Point();
         display.getSize(size);
-
 
         spaceGameView = new SpaceGameView(this, size.x, size.y);
         setContentView(spaceGameView);
