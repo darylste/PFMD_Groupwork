@@ -30,32 +30,30 @@ public class Bullet {
 
       //  height = screenY / 20;
         isActive = false;
-        this.screenX =screenX;
+        this.screenX = screenX;
         this.screenY = screenY;
         this.rect = new RectF();
     }
 
     public boolean shoot(float startX, float startY, int direction) {
-        /*if (!isActive) {*/
-
+        if (!isActive) {
             x = startX;
             y = startY;
             heading = direction;
             isActive = true;
 
-            if ((direction == RIGHT)||(direction==LEFT)) {
-                width = screenX/15;
+            if ((direction == RIGHT) || (direction == LEFT)) {
+                width = screenX / 15;
                 height = 7;
             } else {
-                height = screenX/15;
+                height = screenX / 15;
                 width = 7;
             }
-
             return true;
-        /*}
+        }
 
         // Bullet already active
-        return false;*/
+        return false;
     }
 
     public void update(long fps) {
