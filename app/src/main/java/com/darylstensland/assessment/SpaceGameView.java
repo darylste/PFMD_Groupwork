@@ -47,9 +47,10 @@ public class SpaceGameView extends SurfaceView implements Runnable {
     private int screenY;
     private Spaceship spaceShip;
     private Bullet bullet;
-
+    private Asteroid[] asteroids = new Asteroid[5];
     private Enemy[] enemies = new Enemy[5];
     private int numEnemies = 0;
+    private int numAsteroids = 0;
 
 
     public SpaceGameView(Context context, int x, int y) {
@@ -65,15 +66,29 @@ public class SpaceGameView extends SurfaceView implements Runnable {
         spaceShip = new Spaceship(context, screenX, screenY);
         bullet = new Bullet(screenX, screenY);
 
+
         initLevel();
     }
 
 
     private void initLevel() {
+       initEnemies();
+       initAsteroids();
+    }
+    private void initEnemies() {
         numEnemies = 0;
         for (int row = 0; row < 5; row++) {
             enemies[row] = new Enemy(context, row, screenX, screenY);
             numEnemies++;
+        }
+    }
+
+    private void initAsteroids() {
+        numAsteroids = 0;
+        for(int row = 0; row <5; row++) {
+            asteroids[row] = new Asteroid(context, row, screenX, screenY);
+            asteroids[row].setVisible();
+            numAsteroids++;
         }
     }
 
@@ -113,7 +128,6 @@ public class SpaceGameView extends SurfaceView implements Runnable {
                 enemies[row].update(fps);
                 // Check collision with bullet
                 checkCollisions();
-
             }
 
             if (enemies[row].getY() > screenY - enemies[row].getLength()) {
@@ -123,10 +137,19 @@ public class SpaceGameView extends SurfaceView implements Runnable {
                 enemies[row].dropDownAndReverse();
             }
 
+            if(asteroids[row].getVisibility()){
+                asteroids[row].update(fps);
+                checkCollisions();
+            }
+
         }
 
         if (lives <= 0) {
             playing = false;
+        }
+
+        if(numAsteroids == 0) {
+            initAsteroids();
         }
 
     }
@@ -141,7 +164,6 @@ public class SpaceGameView extends SurfaceView implements Runnable {
         ) {
             spaceShip.setMovementState(spaceShip.STOPPED);
         }
-
 
 //        Set bullets inactive when off screen
         if (bullet.getImpactPointY() < 0 ||
@@ -168,6 +190,21 @@ public class SpaceGameView extends SurfaceView implements Runnable {
             }
         }
 
+//        Handle bullets hitting asteroids
+        for(int i = 0; i < 5; i++){
+            if(bullet.getImpactPointX() >= asteroids[i].getX() &&
+                    bullet.getImpactPointX() <= asteroids[i].getX() + asteroids[i].getLength() &&
+                    bullet.getImpactPointY() >= asteroids[i].getY() &&
+                    bullet.getImpactPointY() <= asteroids[i].getY() + asteroids[i].getHeight() &&
+                    bullet.getStatus() &&
+                    asteroids[i].getVisibility()) {
+                bullet.setInactive();
+                asteroids[i].setInvisible();
+                numAsteroids = numAsteroids -1;
+                score = score + 1;
+            }
+        }
+
 //        Handle enemies hitting player
         for (int i = 0; i < 5; i++) {
             if (enemies[i].isVisible &&
@@ -177,6 +214,27 @@ public class SpaceGameView extends SurfaceView implements Runnable {
                     enemies[i].getY() <= spaceShip.getY() + spaceShip.getHeight()) {
                 lives = lives - 1;
                 enemies[i].setInvisible();
+            }
+        }
+//        Set asteroids inactive when off screen
+        for(int i = 0; i < 5; i++) {
+            if(asteroids[i].isVisible &&
+               asteroids[i].getX() <= 0){
+                asteroids[i].setInvisible();
+                numAsteroids = numAsteroids - 1;
+            }
+        }
+
+//        Handle player hitting asteroid
+        for (int i = 0; i < 5; i++) {
+            if(asteroids[i].isVisible &&
+                    asteroids[i].getX() >= spaceShip.getX() &&
+                    asteroids[i].getX() <= spaceShip.getX() + spaceShip.getLength() &&
+                    asteroids[i].getY() >= spaceShip.getY() &&
+                    asteroids[i].getY() <= spaceShip.getY() + spaceShip.getHeight()) {
+                lives = lives -1;
+                asteroids[i].setInvisible();
+                numAsteroids = numAsteroids - 1;
             }
         }
 
@@ -199,15 +257,19 @@ public class SpaceGameView extends SurfaceView implements Runnable {
             canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_down), 25, 1500, paint);
             canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_left), 150, 1375, paint);
             canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.arrow_right), 150, 1625, paint);
-            if (bullet.getStatus())
+
+            if (bullet.getStatus()) {
                 canvas.drawRect(bullet.getRect(), paint);
+            }
+
             for (int row = 0; row < 5; row++) {
                 if (enemies[row].getVisibility()) {
                     canvas.drawBitmap(enemies[row].getBitmap(), enemies[row].getX(), enemies[row].getY(), paint);
-                    numEnemies++;
+                }
+                if (asteroids[row].getVisibility()) {
+                    canvas.drawBitmap(asteroids[row].getBitmap(), asteroids[row].getX(), asteroids[row].getY(), paint);
                 }
             }
-
             ourHolder.unlockCanvasAndPost(canvas);
         }
     }
