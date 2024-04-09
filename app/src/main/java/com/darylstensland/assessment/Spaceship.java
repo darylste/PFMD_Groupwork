@@ -5,146 +5,152 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 
-
 public class Spaceship {
 
+    // Rectangle for collision detection
     RectF rect;
-    private Bitmap bitmapup;
-    private Bitmap bitmapleft;
-    private Bitmap bitmapright;
-    private Bitmap bitmapdown;
-    public Bitmap currentBitmap;
-    private float height;
-    private float length;
-    private float x;
-    private float y;
-    private int screenX;
-    private int screenY;
-    private float SpaceShipSpeed;
-    public final int STOPPED = 0;
-    public final int LEFT = 1;
-    public final int RIGHT = 2;
-    public final int UP = 3;
-    public final int DOWN = 4;
 
-    ///maybe more movement than this
-    private int SpaceShipMoving = STOPPED;
-    private int spaceShipSpeed;
+    // Bitmaps for spaceship visuals
+    private Bitmap bitmapup, bitmapleft, bitmapright, bitmapdown, currentBitmap;
 
-    public Spaceship(Context context, int screenX, int screenY){
+    // Spaceship properties
+    private float height, length, x, y;
+    private int screenX, screenY;
+    private int spaceshipSpeed;
+    private int health = 100; // Initial health
 
+    // Movement constants
+    public static final int STOPPED = 0, LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4;
+
+    // Movement state
+    private int spaceshipMoving = STOPPED;
+
+    // Listener for game-over events
+    private GameOverListener gameOverListener;
+
+    public interface GameOverListener {
+        void onGameOver();
+    }
+
+    public Spaceship(Context context, int screenX, int screenY, GameOverListener listener) {
+        this.screenX = screenX;
+        this.screenY = screenY;
+        this.gameOverListener = listener;
+
+        // Initializing the spaceship's rectangle for collision detection
         rect = new RectF();
 
-        length = screenX/10;
-        height = screenY/10;
+        // Defining the spaceship's size
+        length = screenX / 10;
+        height = screenY / 10;
 
+        // Setting initial position
         x = screenX / 2;
         y = screenY / 2;
 
-        spaceShipSpeed = 350;
+        // Setting movement speed
+        spaceshipSpeed = 350;
+
+        // Loading and scaling bitmap images for the spaceship
         bitmapup = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_up);
-
-        // stretch the bitmap to a size appropriate for the screen resolution
-        bitmapup = Bitmap.createScaledBitmap(bitmapup,
-                (int) (length),
-                (int) (height),
-                false);
-
-        //  bitmapup = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipup);
-        //  bitmapup = Bitmap.createScaledBitmap(bitmapup, (int) (length), (int) (height),false);
-
         bitmapright = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_right);
-        bitmapright = Bitmap.createScaledBitmap(bitmapright, (int) (length), (int) (height),false);
-
         bitmapleft = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_left);
-        bitmapleft = Bitmap.createScaledBitmap(bitmapleft, (int) (length), (int) (height),false);
-
         bitmapdown = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_down);
-        bitmapdown = Bitmap.createScaledBitmap(bitmapdown, (int) (length), (int) (height),false);
 
-        currentBitmap = bitmapleft;
-        this.screenX = screenX;
-        this.screenY = screenY;
+        bitmapup = Bitmap.createScaledBitmap(bitmapup, (int) (length), (int) (height), false);
+        bitmapright = Bitmap.createScaledBitmap(bitmapright, (int) (length), (int) (height), false);
+        bitmapleft = Bitmap.createScaledBitmap(bitmapleft, (int) (length), (int) (height), false);
+        bitmapdown = Bitmap.createScaledBitmap(bitmapdown, (int) (length), (int) (height), false);
+
+        // Setting the initial bitmap
+        currentBitmap = bitmapup;
     }
 
-    public void setMovementState(int state){
-        SpaceShipMoving = state;
+    public void setMovementState(int state) {
+        spaceshipMoving = state;
     }
 
-
-    public void update(long fps){
-        if(SpaceShipMoving == LEFT){
-            x = x - spaceShipSpeed / fps;
-            currentBitmap = bitmapleft;
-            if ((x+length)<=0)
-                x = screenX;
-        }
-        if(SpaceShipMoving == RIGHT){
-            x = x + spaceShipSpeed / fps;
-            currentBitmap = bitmapright;
-            if (x>=screenX)
-                x = 0 - length;
-        }
-        if(SpaceShipMoving == UP){
-            y = y - spaceShipSpeed / fps;
-            currentBitmap = bitmapup;
-            if (y+height <=0)
-                y = screenY;
-
-        }
-
-        if(SpaceShipMoving == DOWN){
-            y = y + spaceShipSpeed / fps;
-            currentBitmap = bitmapdown;
-            if (y>=screenY)
-                y = 0 - height;
+    public void update(long fps) {
+        // Movement logic
+        switch (spaceshipMoving) {
+            case LEFT:
+                x -= spaceshipSpeed / fps;
+                currentBitmap = bitmapleft;
+                break;
+            case RIGHT:
+                x += spaceshipSpeed / fps;
+                currentBitmap = bitmapright;
+                break;
+            case UP:
+                y -= spaceshipSpeed / fps;
+                currentBitmap = bitmapup;
+                break;
+            case DOWN:
+                y += spaceshipSpeed / fps;
+                currentBitmap = bitmapdown;
+                break;
         }
 
+        // Wrap around the screen edges
+        if (x < 0 - length) x = screenX;
+        else if (x > screenX) x = 0 - length;
+        if (y < 0 - height) y = screenY;
+        else if (y > screenY) y = 0 - height;
 
+        // Update the rectangle for collision detection
+        rect.set(x, y, x + length, y + height);
 
-        rect.top = y;
-        rect.bottom = y + height;
-        rect.left = x;
-        rect.right = x + length;
-
+        // Check for game-over conditions
+        checkForGameOverCondition();
     }
 
+    private void checkForGameOverCondition() {
+        if (health <= 0 || x < 0 || x > screenX || y < 0 || y > screenY) {
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver();
+            }
+        }
+    }
 
-    public RectF getRect(){
+    public void checkCollisionWithEnemy(RectF enemyRect) {
+        if (RectF.intersects(this.rect, enemyRect)) {
+            reduceHealth(20);
+        }
+    }
+
+    public void reduceHealth(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            checkForGameOverCondition();
+        }
+    }
+
+    // Getters and Setters
+    public RectF getRect() {
         return rect;
     }
 
-    public Bitmap getBitmap(){
-
+    public Bitmap getBitmap() {
         return currentBitmap;
     }
 
-    public float getX(){
+    public float getX() {
         return x;
     }
-    public void setX(int x) {
+
+    public void setX(float x) {
         this.x = x;
     }
-    public float getY(){
+
+    public float getY() {
         return y;
     }
-    public void setY(int y){
+
+    public void setY(float y) {
         this.y = y;
     }
-    public float getLength(){
+
+    public float getLength() {
         return length;
     }
-
-    public void updateShipPosition(int curX, int curY, int tarX, int tarY) {
-
-        float currentX = curX;
-        float currentY = curY;
-
-        float deltaX = tarX - currentX;
-        float deltaY = tarY - currentY;
-
-
-    }
-
-
 }
