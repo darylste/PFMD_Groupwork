@@ -49,8 +49,10 @@ public class SpaceGameView extends SurfaceView implements Runnable {
     private Bullet bullet;
     private Asteroid[] asteroids = new Asteroid[5];
     private Enemy[] enemies = new Enemy[5];
+    private Coin coin;
     private int numEnemies = 0;
     private int numAsteroids = 0;
+    private int numCoins = 0;
 
 
     public SpaceGameView(Context context, int x, int y) {
@@ -65,6 +67,7 @@ public class SpaceGameView extends SurfaceView implements Runnable {
 
         spaceShip = new Spaceship(context, screenX, screenY);
         bullet = new Bullet(screenX, screenY);
+        coin = new Coin(context,screenX,screenY);
 
 
         initLevel();
@@ -90,6 +93,12 @@ public class SpaceGameView extends SurfaceView implements Runnable {
             asteroids[row].setVisible();
             numAsteroids++;
         }
+    }
+
+    private void initCoin() {
+        numCoins = 1;
+        coin = new Coin(context, screenX, screenY);
+        coin.setVisible();
     }
 
 
@@ -144,6 +153,9 @@ public class SpaceGameView extends SurfaceView implements Runnable {
 
         }
 
+        if(coin.getVisibility()) {
+            checkCollisions();
+        }
         if (lives <= 0) {
             playing = false;
         }
@@ -152,6 +164,9 @@ public class SpaceGameView extends SurfaceView implements Runnable {
             initAsteroids();
         }
 
+        if(numCoins == 0) {
+            initCoin();
+        }
     }
 
 
@@ -227,15 +242,25 @@ public class SpaceGameView extends SurfaceView implements Runnable {
 
 //        Handle player hitting asteroid
         for (int i = 0; i < 5; i++) {
-            if(asteroids[i].isVisible &&
+            if (asteroids[i].isVisible &&
                     asteroids[i].getX() >= spaceShip.getX() &&
                     asteroids[i].getX() <= spaceShip.getX() + spaceShip.getLength() &&
                     asteroids[i].getY() >= spaceShip.getY() &&
                     asteroids[i].getY() <= spaceShip.getY() + spaceShip.getHeight()) {
-                lives = lives -1;
+                lives = lives - 1;
                 asteroids[i].setInvisible();
                 numAsteroids = numAsteroids - 1;
             }
+        }
+//        Handle player hitting coin
+        if(coin.getVisibility() &&
+        coin.getX() >= spaceShip.getX() &&
+        coin.getX() <= spaceShip.getX() + spaceShip.getLength() &&
+        coin.getY() >= spaceShip.getY() &&
+        coin.getY() <= spaceShip.getY() + spaceShip.getHeight()) {
+            score = score + 5;
+            coin.setInvisible();
+            numCoins = 0;
         }
 
     }
@@ -270,6 +295,11 @@ public class SpaceGameView extends SurfaceView implements Runnable {
                     canvas.drawBitmap(asteroids[row].getBitmap(), asteroids[row].getX(), asteroids[row].getY(), paint);
                 }
             }
+
+            if(coin.getVisibility()) {
+                canvas.drawBitmap(coin.getBitmap(), coin.getX(), coin.getY(), paint);
+            }
+
             ourHolder.unlockCanvasAndPost(canvas);
         }
     }
