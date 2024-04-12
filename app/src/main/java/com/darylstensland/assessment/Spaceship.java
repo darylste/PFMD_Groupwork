@@ -7,7 +7,6 @@ import android.graphics.RectF;
 
 
 public class Spaceship {
-
     RectF rect;
     private Bitmap bitmapup;
     private Bitmap bitmapleft;
