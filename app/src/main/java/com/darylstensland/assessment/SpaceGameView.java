@@ -2,12 +2,14 @@ package com.darylstensland.assessment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -166,15 +168,7 @@ public class SpaceGameView extends SurfaceView implements Runnable {
 
 
 
-        if (lives <= 0 || numEnemies == 0 || enemyAtBottom) {
-            Context context = getContext();
-            ((Activity) context).runOnUiThread(new Runnable() {
-                @Override
-                        public void run() {
-                    ((Activity) context).setContentView(new GameOver(context,score));
-                }
-            });
-        }
+        checkGameOver();
 
         if(numAsteroids == 0) {
             initAsteroids();
@@ -279,6 +273,19 @@ public class SpaceGameView extends SurfaceView implements Runnable {
             numCoins = 0;
         }
 
+    }
+
+    private void checkGameOver() {
+
+        if (lives <= 0 || numEnemies == 0 || enemyAtBottom) {
+            Context context = getContext();
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                        public void run() {
+                    ((Activity) context).setContentView(new GameOver(context,score));
+                }
+            });
+        }
     }
 
 

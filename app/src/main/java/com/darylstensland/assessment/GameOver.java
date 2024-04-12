@@ -1,99 +1,95 @@
 package com.darylstensland.assessment;
 
+import android.app.Activity;
 import android.content.Context;
-
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-
 import android.graphics.Color;
-
 import android.graphics.Paint;
-
 import android.graphics.Typeface;
-
 import android.view.MotionEvent;
-
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class GameOver extends SurfaceView  {
-    private Context context;
-
-
+public class GameOver extends SurfaceView implements SurfaceHolder.Callback {
     private Paint paint;
-
+    private Paint gameOverPaint;
     private final int score;
 
-
     public GameOver(Context context, int score) {
-
         super(context);
-        this.context = context;
-
         this.score = score;
 
-// Initialize paint for drawing text
-
+        // Initialize paint for drawing text
         paint = new Paint();
-
-        paint.setTextSize(100);
-
-        paint.setColor(Color.RED);
-
-        paint.setTypeface(Typeface.DEFAULT_BOLD);
-
-    }
-
-    @Override
-
-    protected void onDraw(Canvas canvas) {
-
-        super.onDraw(canvas);
-
-// Fill canvas with a black background
-
-        canvas.drawColor(Color.GREEN);
-        canvas.drawBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.gameplay_background), 0, 0, paint);
-
-        paint.setTextSize(50);
+        paint.setTextSize(75);
         paint.setColor(Color.WHITE);
+        paint.setTypeface(Typeface.DEFAULT);
 
-// Draw "Game Over" text
+        gameOverPaint = new Paint();
+        gameOverPaint.setTextSize(150);
+        gameOverPaint.setColor(Color.WHITE);
+        gameOverPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
-        canvas.drawText("Game Over", 100, 100, paint);
+        // Ensure we get surface creation and change events
+        getHolder().addCallback(this);
+    }
 
-// Display score
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        // Draw once the surface is ready
+        Canvas canvas = holder.lockCanvas();
+        if (canvas != null) {
+            draw(canvas);  // Use the provided canvas
+            holder.unlockCanvasAndPost(canvas);
+        }
+    }
 
-        canvas.drawText("Score: " + score, 100, 200, paint);
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // Handle changes (e.g., orientation, size change)
+    }
 
-// Draw instructions to restart or exit
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        // Clean up if necessary
+    }
 
+    public void onDraw(Canvas canvas) {
+        // Fill canvas with black background
+        canvas.drawColor(Color.BLACK);
 
+        // Draw  background image
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.game_over_background), 0, 0, paint);
+        // Rotate Canvus
+        canvas.rotate(90);
 
-        canvas.drawText("Tap anywhere to restart", 100, 600, paint);
+        // Draw "Game Over" text
+        canvas.drawText("Game Over...", 650, -700, gameOverPaint);
+
+        // Display score
+        canvas.drawText("You Scored: " + score, 775, -500, paint);
+
+        // Draw button image
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.replay_btn), 800, -400, paint);
+        canvas.rotate(-90);
+
 
     }
 
     @Override
-
-    public boolean onTouchEvent(MotionEvent event) {
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
-// Here, implement restarting the game or going back to the main menu
-
-// Possibly calling a method in the main game activity or view
-
-// For simplicity, click the restart action
-
-            System.out.println("Restarting game...");
-
-            return true;
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        if ((motionEvent.getY() > -500) &&
+            (motionEvent.getY() > -450) &&
+            (motionEvent.getX() > 775) &&
+            (motionEvent.getX() > 950)) {
+           Activity activity = (Activity) getContext();
+            Intent intent = new Intent(activity, MainActivity.class);
+            activity.finish();
+            activity.startActivity(intent);
 
         }
-
-        return super.onTouchEvent(event);
-
+        return super.onTouchEvent(motionEvent);
     }
-
 }
