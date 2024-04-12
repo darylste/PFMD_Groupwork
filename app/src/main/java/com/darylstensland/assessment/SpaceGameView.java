@@ -1,5 +1,6 @@
 package com.darylstensland.assessment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Space;
 
 import java.io.IOException;
@@ -53,6 +55,8 @@ public class SpaceGameView extends SurfaceView implements Runnable {
     private int numEnemies = 0;
     private int numAsteroids = 0;
     private int numCoins = 0;
+    private boolean enemyAtBottom = false;
+
 
 
     public SpaceGameView(Context context, int x, int y) {
@@ -151,13 +155,25 @@ public class SpaceGameView extends SurfaceView implements Runnable {
                 checkCollisions();
             }
 
+            if (enemies[row].getX() < enemies[row].getHeight()) {
+                enemyAtBottom = true;
+            }
         }
 
         if(coin.getVisibility()) {
             checkCollisions();
         }
-        if (lives <= 0) {
-            playing = false;
+
+
+
+        if (lives <= 0 || numEnemies == 0 || enemyAtBottom) {
+            Context context = getContext();
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                        public void run() {
+                    ((Activity) context).setContentView(new GameOver(context,score));
+                }
+            });
         }
 
         if(numAsteroids == 0) {
