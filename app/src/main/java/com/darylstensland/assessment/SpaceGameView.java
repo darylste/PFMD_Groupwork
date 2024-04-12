@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,25 +19,45 @@ public class SpaceGameView extends SurfaceView implements Runnable, Spaceship.Ga
     private long fps;
     private int screenX;
     private int screenY;
-    public int score = 0;
+    private int score = 0;
     private int lives = 3;
-    private Spaceship spaceShip;
+    private Spaceship spaceShip; // Assume existence of a spaceship class
+    // Placeholder objects for game elements
+    // private Bullet bullet; // Assume existence
+    // private Asteroid[] asteroids = new Asteroid[5]; // Assume existence
+    // private Enemy[] enemies = new Enemy[5]; // Assume existence
 
-    public SpaceGameView(Context context, int x, int y) {
+    // Constructors for proper initialization
+    public SpaceGameView(Context context) {
         super(context);
-
-        ourHolder = getHolder();
-        paint = new Paint();
-
-        screenX = x;
-        screenY = y;
-
-        initLevel();
+        init(context);
     }
 
-    private void initLevel(){
-        // Note: Ensure that this class implements Spaceship.GameOverListener interface correctly
-        spaceShip = new Spaceship(getContext(), screenX, screenY, this); // Passing 'this' as GameOverListener
+    public SpaceGameView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public SpaceGameView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    // Common initialization block
+    private void init(Context context) {
+        this.ourHolder = getHolder();
+        this.paint = new Paint();
+        // Placeholder for additional initialization logic
+    }
+
+    // Game initialization and setup logic
+    public void setupGame(int x, int y) {
+        this.screenX = x;
+        this.screenY = y;
+
+        // Initialize the spaceship and other game elements here
+        // spaceShip = new Spaceship(context, screenX, screenY, this);
+        // Further initialization of game elements (bullets, asteroids, enemies) would go here
     }
 
     @Override
@@ -45,62 +65,57 @@ public class SpaceGameView extends SurfaceView implements Runnable, Spaceship.Ga
         while (playing) {
             long startFrameTime = System.currentTimeMillis();
 
-            if(!paused){
+            if (!paused) {
                 update();
             }
 
-            draw();
+            drawGameElements();
 
             long timeThisFrame = System.currentTimeMillis() - startFrameTime;
-            if (timeThisFrame >= 1) {
+            if (timeThisFrame > 0) {
                 fps = 1000 / timeThisFrame;
             }
         }
     }
 
-    private void update(){
-        spaceShip.update(fps);
+    private void update() {
+        // Update game logic (move spaceships, check collisions, etc.)
+        // Example: spaceShip.update(fps);
     }
 
-    private void draw() {
+    private void drawGameElements() {
         if (ourHolder.getSurface().isValid()) {
             Canvas canvas = ourHolder.lockCanvas();
-
-            // Clear the screen with a solid color
-            canvas.drawColor(Color.BLACK);
-
-            // Draw the background
-            canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.background), 0, 0, paint);
-
-            // Draw the spaceship
-            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
-
-            // Draw the score and lives
-            paint.setColor(Color.argb(255, 249, 129, 0));
-            paint.setTextSize(40);
-            canvas.drawText("Score: " + score + " Lives: " + lives, 10, 50, paint);
-
+            // Clear the screen and draw game elements (spaceship, bullets, enemies)
+            canvas.drawColor(Color.BLACK); // Clear the screen
+            // Draw spaceship and other game elements here
             ourHolder.unlockCanvasAndPost(canvas);
         }
     }
 
+    // Placeholder for collision detection logic
+    private void checkCollisions() {
+        // Implement collision detection and handling logic here
+    }
+
     @Override
     public void onGameOver() {
-        // Handle the game over logic here
+        // Handle game over logic
         paused = true;
-        // Perform additional actions like resetting the game or showing a game over screen
     }
 
     public void pause() {
+        // Pause the game loop
         playing = false;
         try {
-            if (gameThread != null) gameThread.join();
+            gameThread.join();
         } catch (InterruptedException e) {
-            Log.e("Error:", "joining thread");
+            // Log or handle interruption
         }
     }
 
     public void resume() {
+        // Resume the game loop
         playing = true;
         gameThread = new Thread(this);
         gameThread.start();
@@ -108,16 +123,7 @@ public class SpaceGameView extends SurfaceView implements Runnable, Spaceship.Ga
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                paused = false;
-                // Determine direction based on touch position
-                // Existing movement logic...
-                break;
-            case MotionEvent.ACTION_UP:
-                spaceShip.setMovementState(Spaceship.STOPPED);
-                break;
-        }
-        return true;
+        // Handle user input (e.g., for controlling the spaceship)
+        return true; // Return true to indicate the event was handled
     }
 }

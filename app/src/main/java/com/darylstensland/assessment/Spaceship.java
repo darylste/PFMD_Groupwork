@@ -44,9 +44,14 @@ public class Spaceship {
         length = screenX / 10;
         height = screenY / 10;
 
+
         // Setting initial position
         x = screenX / 2;
         y = screenY / 2;
+
+        x = screenX - screenX/2 - height;
+        y = screenY - screenY/2 - length;
+
 
         // Setting movement speed
         spaceshipSpeed = 350;
@@ -57,6 +62,7 @@ public class Spaceship {
         bitmapleft = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_left);
         bitmapdown = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceship_down);
 
+
         bitmapup = Bitmap.createScaledBitmap(bitmapup, (int) (length), (int) (height), false);
         bitmapright = Bitmap.createScaledBitmap(bitmapright, (int) (length), (int) (height), false);
         bitmapleft = Bitmap.createScaledBitmap(bitmapleft, (int) (length), (int) (height), false);
@@ -64,6 +70,11 @@ public class Spaceship {
 
         // Setting the initial bitmap
         currentBitmap = bitmapup;
+
+        currentBitmap = bitmapright;
+        this.screenX = screenX;
+        this.screenY = screenY;
+
     }
 
     public void setMovementState(int state) {
@@ -153,4 +164,22 @@ public class Spaceship {
     public float getLength() {
         return length;
     }
+
+
+    public float getHeight(){
+        return height;
+    }
+
+    public void updateShipPosition(int curX, int curY, int tarX, int tarY) {
+
+        float currentX = curX;
+        float currentY = curY;
+
+        float deltaX = tarX - currentX;
+        float deltaY = tarY - currentY;
+
+
+    }
+
+
 }
