@@ -43,5 +43,15 @@ public class MainActivity extends AppCompatActivity {
         // Tell the gameView pause method to execute
         spaceGameView.pause();
     }
+
+    public void restartGame() {
+        Display display = getWindowManager().getDefaultDisplay();
+
+        Point size = new Point();
+        display.getSize(size);
+
+        spaceGameView = new SpaceGameView(this, size.x, size.y);
+        setContentView(spaceGameView);
+    }
 }
 
